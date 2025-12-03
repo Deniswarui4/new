@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { apiClient } from './api-client';
 import { User } from './types';
 import { initializeCurrency } from './currency';
@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         // Initialize currency settings early
         await initializeCurrency();
-        
+
         const token = apiClient['getToken']();
         if (token) {
           const profile = await apiClient.getProfile();

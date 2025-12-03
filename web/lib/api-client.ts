@@ -237,6 +237,15 @@ class APIClient {
     return this.handleResponse<EventStats>(response);
   }
 
+  async verifyTicket(eventId: string, ticketNumber: string): Promise<{ message: string; ticket: Ticket }> {
+    const response = await fetch(`${API_BASE_URL}/organizer/events/${eventId}/tickets/verify`, {
+      method: 'POST',
+      headers: this.getHeaders(true),
+      body: JSON.stringify({ ticket_number: ticketNumber }),
+    });
+    return this.handleResponse<{ message: string; ticket: Ticket }>(response);
+  }
+
   // Ticket Purchase Endpoints
   async purchaseTickets(data: PurchaseTicketRequest): Promise<PurchaseTicketResponse> {
     const response = await fetch(`${API_BASE_URL}/tickets/purchase`, {

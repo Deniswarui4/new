@@ -144,6 +144,9 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, cfg *config.Config) {
 			// Ticket type management
 			organizer.POST("/events/:id/ticket-types", organizerHandler.CreateTicketType)
 
+			// Ticket verification
+			organizer.POST("/events/:id/tickets/verify", organizerHandler.VerifyTicket)
+
 			// Financial management
 			organizer.GET("/balance", organizerHandler.GetOrganizerBalance)
 			organizer.POST("/withdrawals", organizerHandler.RequestWithdrawal)

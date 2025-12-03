@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
-import { User } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
 import { DashboardLayout } from '@/components/dashboard-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,7 +11,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Settings, User as UserIcon, Mail, Phone, Calendar, Shield, Save, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -124,7 +122,7 @@ export default function OrganizerSettingsPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">Account Status</Label>
@@ -234,7 +232,7 @@ export default function OrganizerSettingsPage() {
                   <strong>Email Notifications:</strong> You will receive email notifications for:
                 </AlertDescription>
               </Alert>
-              
+
               <div className="space-y-3 text-sm">
                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                   <div>
@@ -243,7 +241,7 @@ export default function OrganizerSettingsPage() {
                   </div>
                   <Badge variant="default">Enabled</Badge>
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                   <div>
                     <p className="font-medium">Ticket Sales</p>
@@ -251,7 +249,7 @@ export default function OrganizerSettingsPage() {
                   </div>
                   <Badge variant="default">Enabled</Badge>
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                   <div>
                     <p className="font-medium">Withdrawal Updates</p>
@@ -282,7 +280,7 @@ export default function OrganizerSettingsPage() {
                     Change Password
                   </Button>
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
                     <p className="font-medium">Two-Factor Authentication</p>
@@ -293,7 +291,7 @@ export default function OrganizerSettingsPage() {
                   </Button>
                 </div>
               </div>
-              
+
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
@@ -316,23 +314,23 @@ export default function OrganizerSettingsPage() {
                 <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                   <h4 className="font-medium text-blue-900 mb-1">Event Review Process</h4>
                   <p className="text-blue-700">
-                    All events must be reviewed and approved by moderators before they can be published. 
+                    All events must be reviewed and approved by moderators before they can be published.
                     This ensures quality and compliance with platform guidelines.
                   </p>
                 </div>
-                
+
                 <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                   <h4 className="font-medium text-green-900 mb-1">Earnings & Withdrawals</h4>
                   <p className="text-green-700">
-                    Your earnings are available for withdrawal after successful ticket sales. 
+                    Your earnings are available for withdrawal after successful ticket sales.
                     Withdrawal requests are processed within 1-3 business days.
                   </p>
                 </div>
-                
+
                 <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                   <h4 className="font-medium text-yellow-900 mb-1">Platform Fees</h4>
                   <p className="text-yellow-700">
-                    Platform fees are automatically deducted from ticket sales. 
+                    Platform fees are automatically deducted from ticket sales.
                     Check the admin settings for current fee rates.
                   </p>
                 </div>

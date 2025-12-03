@@ -118,8 +118,10 @@ export interface Ticket {
   qr_code_url?: string;
   pdf_url?: string;
   checked_in_at?: string;
+  checked_in_by?: string;
   event?: Event;
   ticket_type?: TicketType;
+  attendee?: User;
   created_at: string;
 }
 

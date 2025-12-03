@@ -21,7 +21,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { Calendar, MapPin, Download, QrCode } from 'lucide-react';
+import { Calendar, MapPin, Download, QrCode, Ticket as TicketIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCurrency } from '@/lib/currency';
 
@@ -200,86 +200,86 @@ export default function MyTicketsPage() {
   };
 
   const renderTicketCard = (ticket: Ticket) => (
-    <Card key={ticket.id}>
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <div className="flex-1">
-            <CardTitle className="text-xl">{ticket.event?.title}</CardTitle>
-            <CardDescription className="mt-2">
-              <div className="flex items-center gap-2 mb-1">
-                <Calendar className="h-4 w-4" />
-                {ticket.event && formatDate(ticket.event.start_date)}
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                {ticket.event?.venue}, {ticket.event?.city}
-              </div>
-            </CardDescription>
-          </div>
-          <Badge variant={getStatusColor(ticket.status)} className="capitalize">
+    <div key={ticket.id} className="group relative bg-card rounded-3xl border border-border/50 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1">
+      {/* Decorative top bar */}
+      <div className={`h-2 w-full ${ticket.status === 'confirmed' ? 'bg-gradient-to-r from-primary to-purple-500' : 'bg-muted'}`} />
+
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-4">
+          <Badge variant={getStatusColor(ticket.status)} className="capitalize shadow-sm">
             {ticket.status}
           </Badge>
+          <span className="font-mono text-xs text-muted-foreground tracking-wider">#{ticket.ticket_number.slice(-6)}</span>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="text-sm text-muted-foreground">Ticket Type</p>
-              <p className="font-medium">{ticket.ticket_type?.name}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm text-muted-foreground">Price</p>
-              <p className="font-medium">{formatAmount(ticket.price)}</p>
-            </div>
-          </div>
 
-          <div>
-            <p className="text-sm text-muted-foreground">Ticket Number</p>
-            <p className="font-mono text-sm">{ticket.ticket_number}</p>
-          </div>
+        <h3 className="text-xl font-bold mb-2 line-clamp-1 group-hover:text-primary transition-colors">{ticket.event?.title}</h3>
 
-          {ticket.status === 'confirmed' && (
-            <div className="flex gap-2">
-              {ticket.qr_code_url && (
-                <Button variant="outline" className="flex-1" asChild>
-                  <a
-                    href={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://localhost:8080'}${ticket.qr_code_url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <QrCode className="h-4 w-4 mr-2" />
-                    QR Code
-                  </a>
-                </Button>
-              )}
-              <Link href={`/tickets/${ticket.id}`} className="flex-1">
-                <Button variant="default" className="w-full">
-                  View Details
-                </Button>
-              </Link>
-            </div>
-          )}
-          {ticket.status !== 'confirmed' && (
-            <Link href={`/tickets/${ticket.id}`} className="w-full block">
-              <Button variant="outline" className="w-full">
-                View Details
+        <div className="space-y-2 text-sm text-muted-foreground mb-6">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-primary/70" />
+            {ticket.event && formatDate(ticket.event.start_date)}
+          </div>
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-primary/70" />
+            <span className="line-clamp-1">{ticket.event?.venue}, {ticket.event?.city}</span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between pt-4 border-t border-dashed border-border">
+          <div className="flex flex-col">
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">Type</span>
+            <span className="font-medium">{ticket.ticket_type?.name}</span>
+          </div>
+          <div className="flex flex-col items-end">
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">Price</span>
+            <span className="font-bold text-primary">{formatAmount(ticket.price)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-muted/30 p-4 flex gap-3">
+        {ticket.status === 'confirmed' ? (
+          <>
+            {ticket.qr_code_url && (
+              <Button variant="outline" size="sm" className="flex-1 bg-background hover:bg-background/80" asChild>
+                <a
+                  href={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://localhost:8080'}${ticket.qr_code_url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <QrCode className="h-4 w-4 mr-2" />
+                  QR Code
+                </a>
+              </Button>
+            )}
+            <Link href={`/tickets/${ticket.id}`} className="flex-1">
+              <Button size="sm" className="w-full shadow-md shadow-primary/20">
+                View Ticket
               </Button>
             </Link>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+          </>
+        ) : (
+          <Link href={`/tickets/${ticket.id}`} className="w-full">
+            <Button variant="outline" size="sm" className="w-full">
+              View Details
+            </Button>
+          </Link>
+        )}
+      </div>
+    </div>
   );
 
   if (authLoading || loading) {
     return (
       <DashboardLayout>
         <div className="container mx-auto px-4 py-8">
-          <Skeleton className="h-8 w-48 mb-6" />
-          <div className="space-y-4">
-            {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="h-48 w-full" />
+          <div className="flex items-center justify-between mb-8">
+            <Skeleton className="h-10 w-48" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <Skeleton key={i} className="h-64 w-full rounded-3xl" />
             ))}
           </div>
         </div>
@@ -290,53 +290,60 @@ export default function MyTicketsPage() {
   return (
     <DashboardLayout>
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold">My Tickets</h1>
-          <div className="flex items-center space-x-2">
-            <Link href="/events">
-              <Button>Browse Events</Button>
-            </Link>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">My Tickets</h1>
+            <p className="text-muted-foreground mt-1">Manage your upcoming events and purchase history</p>
           </div>
+          <Link href="/events">
+            <Button className="shadow-lg shadow-primary/20 rounded-full px-6">
+              Browse Events
+            </Button>
+          </Link>
         </div>
 
         <Tabs defaultValue="upcoming" className="w-full">
-          <TabsList className="mb-6">
-            <TabsTrigger value="upcoming">
+          <TabsList className="mb-8 p-1 bg-muted/50 rounded-full inline-flex">
+            <TabsTrigger value="upcoming" className="rounded-full px-6 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">
               Upcoming ({upcomingTickets.length})
             </TabsTrigger>
-            <TabsTrigger value="past">
+            <TabsTrigger value="past" className="rounded-full px-6 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">
               Past Events ({pastTickets.length})
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="upcoming" className="space-y-4">
+          <TabsContent value="upcoming" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {upcomingTickets.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <p className="text-muted-foreground mb-4">You don&apos;t have any upcoming tickets</p>
-                  <Button onClick={() => router.push('/events')}>
-                    Browse Events
-                  </Button>
-                </CardContent>
-              </Card>
+              <div className="text-center py-20 bg-muted/10 rounded-3xl border border-dashed border-border">
+                <div className="bg-primary/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <TicketIcon className="h-10 w-10 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">No upcoming tickets</h3>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">You don&apos;t have any upcoming events scheduled. Explore our events to find your next experience!</p>
+                <Button onClick={() => router.push('/events')} size="lg" className="rounded-full px-8">
+                  Browse Events
+                </Button>
+              </div>
             ) : (
               <>
-                {getPaginatedItems(upcomingTickets, currentPageUpcoming).map(renderTicketCard)}
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {getPaginatedItems(upcomingTickets, currentPageUpcoming).map(renderTicketCard)}
+                </div>
                 {renderPagination(upcomingTickets, currentPageUpcoming, setCurrentPageUpcoming)}
               </>
             )}
           </TabsContent>
 
-          <TabsContent value="past" className="space-y-4">
+          <TabsContent value="past" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {pastTickets.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <p className="text-muted-foreground">No past tickets</p>
-                </CardContent>
-              </Card>
+              <div className="text-center py-20 bg-muted/10 rounded-3xl border border-dashed border-border">
+                <p className="text-muted-foreground">No past tickets found</p>
+              </div>
             ) : (
               <>
-                {getPaginatedItems(pastTickets, currentPagePast).map(renderTicketCard)}
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {getPaginatedItems(pastTickets, currentPagePast).map(renderTicketCard)}
+                </div>
                 {renderPagination(pastTickets, currentPagePast, setCurrentPagePast)}
               </>
             )}

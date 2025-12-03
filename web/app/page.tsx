@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { FeaturedEvents } from '@/components/featured-events';
-import { Calendar, Ticket, Users, Shield, ArrowRight, Star, Zap, Music, Palette, Utensils, Gamepad2, Dumbbell, Briefcase } from 'lucide-react';
+import { Calendar, Ticket, Users, Shield, ArrowRight, Music, Palette, Utensils, Gamepad2, Dumbbell, Briefcase } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,

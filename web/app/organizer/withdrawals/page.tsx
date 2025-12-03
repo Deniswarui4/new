@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -179,7 +178,7 @@ export default function WithdrawalsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">Withdrawals</h1>
-          <Button 
+          <Button
             onClick={handleRequestWithdrawal}
             disabled={!balance || balance.available_balance <= 0}
           >
@@ -307,7 +306,7 @@ export default function WithdrawalsPage() {
                 Request to withdraw funds from your available balance
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-4 py-4">
               {error && (
                 <Alert variant="destructive">

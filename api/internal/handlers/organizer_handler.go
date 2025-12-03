@@ -468,3 +468,70 @@ func (h *OrganizerHandler) GetEventStats(c *gin.Context) {
 
 	c.JSON(http.StatusOK, stats)
 }
+
+// VerifyTicket verifies and checks in a ticket
+func (h *OrganizerHandler) VerifyTicket(c *gin.Context) {
+	eventID := c.Param("id")
+	organizerID, _ := middleware.GetUserID(c)
+
+	var req struct {
+		TicketNumber string `json:"ticket_number" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Verify event belongs to organizer
+	var event models.Event
+	if err := h.db.First(&event, "id = ? AND organizer_id = ?", eventID, organizerID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		return
+	}
+
+	// Find ticket
+	var ticket models.Ticket
+	if err := h.db.Preload("TicketType").Preload("Attendee").First(&ticket, "ticket_number = ? AND event_id = ?", req.TicketNumber, eventID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Ticket not found or does not belong to this event"})
+		return
+	}
+
+	// Check if already used
+	if ticket.Status == models.TicketStatusUsed {
+		c.JSON(http.StatusConflict, gin.H{
+			"error":         "Ticket already used",
+			"ticket":        ticket,
+			"checked_in_at": ticket.CheckedInAt,
+		})
+		return
+	}
+
+	// Check if cancelled
+	if ticket.Status == models.TicketStatusCancelled {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Ticket is cancelled"})
+		return
+	}
+
+	// Check if confirmed
+	if ticket.Status != models.TicketStatusConfirmed {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Ticket is not valid (status: " + string(ticket.Status) + ")"})
+		return
+	}
+
+	// Update ticket status
+	now := time.Now()
+	ticket.Status = models.TicketStatusUsed
+	ticket.CheckedInAt = &now
+	ticket.CheckedInBy = &organizerID
+
+	if err := h.db.Save(&ticket).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check in ticket"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Ticket verified and checked in successfully",
+		"ticket":  ticket,
+	})
+}

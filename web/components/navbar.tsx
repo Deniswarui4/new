@@ -20,17 +20,8 @@ import { Category } from '@/lib/types';
 
 export function Navbar() {
   const { user, logout } = useAuth();
-  const [scrolled, setScrolled] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     loadCategories();
@@ -187,22 +178,18 @@ export function Navbar() {
                       Profile
                     </Link>
                   </DropdownMenuItem>
-                  {user.role === 'attendee' && (
-                    <>
-                      <DropdownMenuItem asChild>
-                        <Link href="/my-tickets" className="cursor-pointer">
-                          <Ticket className="mr-2 h-4 w-4" />
-                          My Tickets
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/transactions" className="cursor-pointer">
-                          <CreditCard className="mr-2 h-4 w-4" />
-                          Transactions
-                        </Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
+                  <DropdownMenuItem asChild>
+                    <Link href="/my-tickets" className="cursor-pointer">
+                      <Ticket className="mr-2 h-4 w-4" />
+                      My Tickets
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/transactions" className="cursor-pointer">
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      Transactions
+                    </Link>
+                  </DropdownMenuItem>
                   {user.role === 'organizer' && (
                     <DropdownMenuItem asChild>
                       <Link href="/organizer/settings" className="cursor-pointer">
@@ -282,6 +269,12 @@ export function Navbar() {
                       <Button variant="ghost" className="w-full justify-start">
                         <LayoutDashboard className="h-4 w-4 mr-2" />
                         Dashboard
+                      </Button>
+                    </Link>
+                    <Link href="/my-tickets">
+                      <Button variant="ghost" className="w-full justify-start">
+                        <Ticket className="h-4 w-4 mr-2" />
+                        My Tickets
                       </Button>
                     </Link>
                     <Link href="/profile">

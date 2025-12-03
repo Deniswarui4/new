@@ -6,7 +6,6 @@ import { apiClient } from '@/lib/api-client';
 import { Event } from '@/lib/types';
 import { useCurrency } from '@/lib/currency';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Carousel,
@@ -15,8 +14,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { Calendar, Star, Users } from 'lucide-react';
-import { toast } from 'sonner';
+import { Star, Users } from 'lucide-react';
 
 import { EventCard } from '@/components/event-card';
 

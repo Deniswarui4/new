@@ -15,13 +15,11 @@ import {
   Users,
   Settings,
   CheckCircle,
-  XCircle,
   BarChart3,
   CreditCard,
   UserCheck,
   Shield,
   Tag,
-  Star,
   LogOut
 } from 'lucide-react';
 
@@ -138,19 +136,9 @@ export function Sidebar({ className }: SidebarProps) {
       icon: LayoutDashboard,
     },
     {
-      title: 'My Tickets',
-      href: '/my-tickets',
-      icon: Ticket,
-    },
-    {
       title: 'Browse Events',
       href: '/events',
       icon: Calendar,
-    },
-    {
-      title: 'Transactions',
-      href: '/transactions',
-      icon: CreditCard,
     },
   ];
 
@@ -229,6 +217,24 @@ export function Sidebar({ className }: SidebarProps) {
                 >
                   <Settings className="mr-2 h-4 w-4" />
                   Profile
+                </Button>
+              </Link>
+              <Link href="/my-tickets">
+                <Button
+                  variant={isActive('/my-tickets') ? 'secondary' : 'ghost'}
+                  className="w-full justify-start"
+                >
+                  <Ticket className="mr-2 h-4 w-4" />
+                  My Tickets
+                </Button>
+              </Link>
+              <Link href="/transactions">
+                <Button
+                  variant={isActive('/transactions') ? 'secondary' : 'ghost'}
+                  className="w-full justify-start"
+                >
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Transactions
                 </Button>
               </Link>
               <Link href="/events">
