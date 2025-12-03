@@ -52,7 +52,10 @@ echo "✅ Old projects removed"
 echo "🧹 Cleaning up system..."
 sudo apt autoremove -y
 sudo apt clean
-docker system prune -af --volumes
+sudo apt clean
+if command -v docker &> /dev/null; then
+    docker system prune -af --volumes
+fi
 echo "✅ System cleaned"
 
 echo ""
