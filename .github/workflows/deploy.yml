@@ -1,0 +1,129 @@
+name: Deploy to Ubuntu Server
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        env:
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PAYSTACK_SECRET_KEY: ${{ secrets.PAYSTACK_SECRET_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          DOMAIN: ${{ secrets.DOMAIN }}
+        run: |
+          ssh $SERVER_USER@$SERVER_IP << 'ENDSSH'
+            set -e
+            
+            # Navigate to project directory
+            cd /opt/event-ticketing || exit 1
+            
+            # Pull latest code
+            echo "🔄 Pulling latest code from GitHub..."
+            git pull origin main
+            
+            # Update environment variables
+            echo "🔧 Updating environment variables..."
+            cat > api/.env << EOF
+          # Database
+          DB_HOST=postgres
+          DB_PORT=5432
+          DB_USER=event_ticketing_user
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_NAME=event_ticketing
+          
+          # JWT
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          
+          # Paystack
+          PAYSTACK_SECRET_KEY=${{ secrets.PAYSTACK_SECRET_KEY }}
+          PAYSTACK_PUBLIC_KEY=${{ secrets.PAYSTACK_PUBLIC_KEY }}
+          
+          # Resend (Email)
+          RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
+          FROM_EMAIL=noreply@${{ secrets.DOMAIN }}
+          
+          # AWS S3 (Optional)
+          AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION=us-east-1
+          AWS_BUCKET=event-ticketing-files
+          
+          # Server
+          PORT=8080
+          GIN_MODE=release
+          ALLOWED_ORIGINS=https://${{ secrets.DOMAIN }},https://www.${{ secrets.DOMAIN }}
+          EOF
+            
+            cat > .env << EOF
+          DB_USER=event_ticketing_user
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_NAME=event_ticketing
+          NEXT_PUBLIC_API_URL=https://${{ secrets.DOMAIN }}/api/v1
+          EOF
+            
+            # Build and deploy with docker-compose
+            echo "🐳 Building Docker images..."
+            docker-compose build --no-cache
+            
+            echo "🚀 Deploying containers..."
+            docker-compose up -d
+            
+            # Wait for services to be healthy
+            echo "⏳ Waiting for services to be healthy..."
+            sleep 10
+            
+            # Check service health
+            echo "🏥 Checking service health..."
+            docker-compose ps
+            
+            # Cleanup old images
+            echo "🧹 Cleaning up old Docker images..."
+            docker image prune -af --filter "until=24h"
+            
+            echo "✅ Deployment completed successfully!"
+          ENDSSH
+
+      - name: Verify deployment
+        env:
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+        run: |
+          sleep 5
+          ssh $SERVER_USER@$SERVER_IP << 'ENDSSH'
+            cd /opt/event-ticketing
+            echo "📊 Service Status:"
+            docker-compose ps
+            
+            echo ""
+            echo "📝 Recent logs:"
+            docker-compose logs --tail=20 api web
+          ENDSSH
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed! Check the logs above for details."

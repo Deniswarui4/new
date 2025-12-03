@@ -9,3 +9,10 @@ build/
 coverage/
 .turbo/
 storage/
+
+# SSL Certificates
+nginx/ssl/*.pem
+
+# Production environment files
+.env.production
+api/.env

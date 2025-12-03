@@ -1,0 +1,70 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: event-ticketing-db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - event-ticketing-network
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: event-ticketing-api
+    env_file:
+      - ./api/.env
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./api/storage:/root/storage
+    depends_on:
+      - postgres
+    networks:
+      - event-ticketing-network
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: event-ticketing-web
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - event-ticketing-network
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: event-ticketing-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - api
+      - web
+    networks:
+      - event-ticketing-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  event-ticketing-network:
+    driver: bridge
