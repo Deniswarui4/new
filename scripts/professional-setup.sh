@@ -5,6 +5,12 @@
 # Server: 23.95.6.163
 
 set -e
+export DEBIAN_FRONTEND=noninteractive
+
+# Configure needrestart to be non-interactive if installed
+if [ -f /etc/needrestart/needrestart.conf ]; then
+    sudo sed -i "s/#\$nrconf{restart} = 'i';/\$nrconf{restart} = 'a';/" /etc/needrestart/needrestart.conf
+fi
 
 echo "🧹 Starting server cleanup and professional setup..."
 
