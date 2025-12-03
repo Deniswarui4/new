@@ -295,7 +295,7 @@ function EventsContent() {
             </div>
             <h3 className="text-xl font-semibold mb-2">No events found</h3>
             <p className="text-muted-foreground max-w-md mx-auto">
-              We couldn't find any events matching your search. Try adjusting your filters or check back later.
+              We couldn&apos;t find any events matching your search. Try adjusting your filters or check back later.
             </p>
             <Button
               variant="outline"

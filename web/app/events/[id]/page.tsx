@@ -273,7 +273,7 @@ export default function EventDetailsPage() {
 
               {/* Map Placeholder */}
               <div>
-                <h2 className="text-xl font-semibold mb-4">Where you'll be</h2>
+                <h2 className="text-xl font-semibold mb-4">Where you&apos;ll be</h2>
                 <div className="h-80 bg-muted rounded-xl flex items-center justify-center border">
                   <div className="text-center">
                     <MapPin className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
@@ -400,7 +400,7 @@ export default function EventDetailsPage() {
                     </Button>
 
                     <div className="text-center text-xs text-muted-foreground">
-                      You won't be charged yet
+                      You won&apos;t be charged yet
                     </div>
                   </CardContent>
                 </Card>
